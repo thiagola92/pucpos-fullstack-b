@@ -1,5 +1,7 @@
 # pucpos-fullstack-b
-<small>Repositório do frontend: https://github.com/thiagola92/pucpos-fullstack-f</small>  
+Este é o **backend** do MVP da pós graduação.  
+
+O repositório do **frontend** se encontra em: https://github.com/thiagola92/pucpos-fullstack-f  
 
 # Pré-requisitos
 
