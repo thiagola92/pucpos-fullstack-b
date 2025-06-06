@@ -37,7 +37,9 @@ pip install -r requirements.txt
 ```
 
 # Execução
-Para execução no modo debug:  
+Para execução no modo debug e acesso apenas local:  
 ```
 flask run --debug
 ```
+
+Acesse por http://127.0.0.1:5000
