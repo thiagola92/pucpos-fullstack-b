@@ -17,7 +17,7 @@ python3 -m venv venv
 
 Instalação de pacotes Pythons necessários:  
 ```
-pip install Flask flask-openapi3[swagger]
+pip install -r requirements.txt
 ```
 
 ## Windows
@@ -31,7 +31,7 @@ venv\Scripts\activate
 
 Instalação de pacotes Pythons necessários:  
 ```
-pip install Flask flask-openapi3[swagger]
+pip install -r requirements.txt
 ```
 
 # Execução
