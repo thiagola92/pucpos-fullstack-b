@@ -37,9 +37,14 @@ pip install -r requirements.txt
 ```
 
 # Execução
-Para execução no modo debug e acesso apenas local:  
+Execute ao menos uma vez a criação do banco de dados:  
+```
+flask init-db
+```
+Execuções seguintes irão recria-lo.  
+
+Para execução no modo debug e acesso local:  
 ```
 flask run --debug
 ```
-
-Acesse por http://127.0.0.1:5000
+Acesse por http://127.0.0.1:5000  
