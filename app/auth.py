@@ -33,6 +33,8 @@ def register():
         database.commit()
     except database.IntegrityError:
         return ("Email já havia sido registrado", 400)
+    except Exception:
+        return ("Error ao registar", 500)
 
     return ("Criado", 201)
 

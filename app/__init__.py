@@ -32,7 +32,7 @@ def create_app(test_config=None):
 
     app.cli.add_command(init_db_command)
     app.teardown_appcontext(close_db)
-    app.register_blueprint(auth.blueprint)
+    app.register_api(auth.blueprint)
 
     @app.route("/")
     def index():
