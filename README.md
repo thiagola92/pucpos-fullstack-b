@@ -48,3 +48,8 @@ Para execução no modo debug e acesso local:
 flask run --debug
 ```
 Acesse por http://127.0.0.1:5000  
+
+# Referencias
+- https://docs.sqlalchemy.org/en/20/orm/quickstart.html
+- https://flask.palletsprojects.com/en/stable/
+- https://luolingchun.github.io/flask-openapi3/

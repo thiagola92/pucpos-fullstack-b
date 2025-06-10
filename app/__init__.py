@@ -4,7 +4,7 @@ from pathlib import Path
 from flask import redirect
 from flask_openapi3 import OpenAPI, Info
 
-from app import auth
+from app.routes import auth
 from app.database import init_db_command, close_db
 
 # Não se deve botar segredos hardcoded,

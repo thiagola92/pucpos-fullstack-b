@@ -7,7 +7,7 @@ DROP TABLE IF EXISTS property_owners;
 CREATE TABLE accounts (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   email TEXT UNIQUE NOT NULL,
-  password TEXT UNIQUE NOT NULL,
+  password TEXT NOT NULL,
   phone TEXT UNIQUE
 );
 
