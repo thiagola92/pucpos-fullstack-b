@@ -1,30 +1,32 @@
-from flask_openapi3 import Tag
-from flask import request
+from flask import request, redirect
 from werkzeug.security import generate_password_hash
+from pydantic import BaseModel, EmailStr
 
 from app.routes.auth import blueprint, tag
 from app.database import DatabaseSession
 from app.database.accounts import Account
 
 
+class RegistrationForm(BaseModel):
+    email: EmailStr
+    password: str
+    name: str
+    cpf: str
+    phone: str
+
+
 @blueprint.post("/register", tags=[tag])
-def register():
-    email = request.form["email"]
-    password = request.form["password"]
-
-    if not email:
-        return ("Email não providênciado", 400)
-
-    if not password:
-        return ("Senha não providênciada", 400)
-
+def register(form: RegistrationForm):
+    request.url
     try:
         with DatabaseSession() as s:
-            account = Account(email=email, password=generate_password_hash(password))
+            account = Account(
+                email=form.email,
+                password=generate_password_hash(form.password),
+            )
             s.add(account)
             s.commit()
-    except Exception as e:
-        print(e)  # Remover no futuro.
+    except Exception:
         return ("Error ao registar", 500)
 
     return ("Criado", 201)

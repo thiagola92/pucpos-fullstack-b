@@ -1,4 +1,3 @@
-from flask_openapi3 import Tag
 from flask import session
 
 from app.routes.auth import blueprint, tag

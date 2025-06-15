@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 
 from flask import redirect
+from flask_cors import CORS
 from flask_openapi3 import OpenAPI, Info
 
 from app.routes import auth
@@ -19,6 +20,8 @@ def create_app(test_config=None):
         SECRET_KEY=SECRET_KEY,
         DATABASE=Path(app.instance_path).joinpath("app.sqlite"),
     )
+
+    CORS(app)
 
     if test_config is None:
         app.config.from_pyfile("config.py", silent=True)
