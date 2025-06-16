@@ -1,6 +1,7 @@
 import functools
 
 import jwt
+from datetime import datetime, UTC
 from flask import g, session
 from flask_openapi3 import APIBlueprint, Tag
 from sqlalchemy import select
@@ -22,6 +23,14 @@ def load_logged_in_user():
         return
 
     token = jwt.decode(encoded, SECRET_KEY, algorithm="HS256")
+    print(token)
+
+    if "expiration" not in token:
+        return
+
+    if token["expiration"] < datetime.now(UTC).timestamp():
+        return
+
     g.account = token["account_id"]
 
     if not g.account:

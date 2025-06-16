@@ -1,4 +1,5 @@
 import jwt
+from datetime import datetime, UTC, timedelta
 from werkzeug.security import check_password_hash
 from sqlalchemy import select
 from pydantic import BaseModel, EmailStr
@@ -26,8 +27,9 @@ def login(form: LoginForm):
         if not check_password_hash(account.password, form.password):
             return ("Senha incorreta", 400)
 
+    expiration = datetime.now(UTC) + timedelta(1)
     encoded = jwt.encode(
-        {"account_id": str(account.id)},
+        {"account_id": str(account.id), "expiration": expiration.timestamp()},
         SECRET_KEY,
         algorithm="HS256",
     )
