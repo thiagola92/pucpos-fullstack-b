@@ -1,9 +1,11 @@
 import functools
 
+import jwt
 from flask import g, session
 from flask_openapi3 import APIBlueprint, Tag
 from sqlalchemy import select
 
+from app.secret import SECRET_KEY
 from app.database import DatabaseSession
 from app.database.accounts import Account
 
@@ -14,7 +16,13 @@ tag = Tag(name="Autenticação", description="Gerencia o acesso do usuário à p
 
 @blueprint.before_app_request
 def load_logged_in_user():
-    g.account = session.get("account_id")
+    encoded = session.get("token")
+
+    if not encoded:
+        return
+
+    token = jwt.decode(encoded, SECRET_KEY, algorithm="HS256")
+    g.account = token["account_id"]
 
     if not g.account:
         return

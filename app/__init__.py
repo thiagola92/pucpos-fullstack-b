@@ -5,12 +5,9 @@ from flask import redirect
 from flask_cors import CORS
 from flask_openapi3 import OpenAPI, Info
 
+from app.secret import SECRET_KEY
 from app.routes import auth
 from app.database import init_db_command, close_db
-
-# Não se deve botar segredos hardcoded,
-# mas o foco não é segurança neste trabalho.
-SECRET_KEY = "227067b319a17f73cb49cad9c61f6b7a7dd9aa7852035e406a5ea86bb3a2d486"
 
 
 def create_app(test_config=None):

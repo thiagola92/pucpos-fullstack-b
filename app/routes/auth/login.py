@@ -1,8 +1,9 @@
-from flask import session
+import jwt
 from werkzeug.security import check_password_hash
 from sqlalchemy import select
 from pydantic import BaseModel, EmailStr
 
+from app.secret import SECRET_KEY
 from app.routes.auth import blueprint, tag
 from app.database import DatabaseSession
 from app.database.accounts import Account
@@ -25,7 +26,10 @@ def login(form: LoginForm):
         if not check_password_hash(account.password, form.password):
             return ("Senha incorreta", 400)
 
-    session.clear()
-    session["account_id"] = account["id"]
+    encoded = jwt.encode(
+        {"account_id": str(account.id)},
+        SECRET_KEY,
+        algorithm="HS256",
+    )
 
-    return ("Acesso concedido", 200)
+    return (encoded, 200)
