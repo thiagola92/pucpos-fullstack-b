@@ -53,3 +53,4 @@ Acesse por http://127.0.0.1:5000
 - https://docs.sqlalchemy.org/en/20/orm/quickstart.html
 - https://flask.palletsprojects.com/en/stable/
 - https://luolingchun.github.io/flask-openapi3/
+- https://luolingchun.github.io/flask-openapi3/v4.x/Usage/Request/#query

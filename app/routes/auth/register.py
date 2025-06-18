@@ -1,4 +1,4 @@
-from flask import request, redirect
+from flask import request
 from werkzeug.security import generate_password_hash
 from pydantic import BaseModel, EmailStr
 

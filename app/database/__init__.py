@@ -2,6 +2,7 @@ import click
 from pathlib import Path
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from werkzeug.security import generate_password_hash
 
 from app.database.accounts import Account
 from app.database.persons import Person
@@ -32,6 +33,142 @@ def init_db():
     Person.metadata.create_all(engine)
     Property.metadata.create_all(engine)
     PropertyOwner.metadata.create_all(engine)
+
+    # Create fake data.
+    with DatabaseSession() as s:
+        accounts = [
+            Account(
+                email="asdf@asdf.com",
+                password=generate_password_hash("asdf"),
+            )
+        ]
+
+        s.add_all(accounts)
+        s.commit()
+
+        persons = [
+            Person(
+                fullname="Fulaninho Jr.",
+                account_id=accounts[0].id,
+            )
+        ]
+
+        s.add_all(persons)
+        s.commit()
+
+        addresses = [
+            Address(
+                country="Brasil",
+                state="RJ",
+                city="Rio de Janeiro",
+                street="Av. Padre Leonel Franca",
+                house_number=20,
+            ),
+            Address(
+                country="Brasil",
+                state="RJ",
+                city="Rio de Janeiro",
+                street="R. Marquês de São Vicente",
+                house_number=25,
+            ),
+            Address(
+                country="Brasil",
+                state="RJ",
+                city="Rio de Janeiro",
+                street="R. Artur Araripe",
+                house_number=30,
+            ),
+            Address(
+                country="Brasil",
+                state="RJ",
+                city="Rio de Janeiro",
+                street="R. Gen. Rabêlo",
+                house_number=30,
+            ),
+            Address(
+                country="Brasil",
+                state="RJ",
+                city="Rio de Janeiro",
+                street="R. Manuel Ferreira",
+                house_number=35,
+            ),
+            Address(
+                country="Brasil",
+                state="RJ",
+                city="Rio de Janeiro",
+                street="Av. Rodrigo Otávio",
+                house_number=40,
+            ),
+        ]
+
+        s.add_all(addresses)
+        s.commit()
+
+        properties = [
+            Property(
+                address_id=addresses[0].id,
+                price=100000000,
+                photo="template_house_0.svg",
+            ),
+            Property(
+                address_id=addresses[1].id,
+                price=100000099,
+                photo="template_house_1.svg",
+            ),
+            Property(
+                address_id=addresses[2].id,
+                price=200000000,
+                photo="template_house_2.svg",
+            ),
+            Property(
+                address_id=addresses[3].id,
+                price=250050099,
+                photo="template_house_3.svg",
+            ),
+            Property(
+                address_id=addresses[4].id,
+                price=50000000,
+                photo="template_house_4.svg",
+            ),
+            Property(
+                address_id=addresses[5].id,
+                price=000,
+                photo="template_house_5.svg",
+            ),
+        ]
+
+        s.add_all(properties)
+        s.commit()
+
+        property_owneres = [
+            PropertyOwner(
+                person_id=accounts[0].id,
+                property_id=properties[0].id,
+            ),
+            PropertyOwner(
+                person_id=accounts[0].id,
+                property_id=properties[1].id,
+            ),
+            PropertyOwner(
+                person_id=accounts[0].id,
+                property_id=properties[2].id,
+            ),
+            PropertyOwner(
+                person_id=accounts[0].id,
+                property_id=properties[3].id,
+            ),
+            PropertyOwner(
+                person_id=accounts[0].id,
+                property_id=properties[4].id,
+            ),
+            PropertyOwner(
+                person_id=accounts[0].id,
+                property_id=properties[5].id,
+            ),
+        ]
+
+        s.add_all(property_owneres)
+        s.commit()
 
 
 @click.command("init-db")

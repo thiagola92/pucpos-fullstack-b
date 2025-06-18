@@ -12,4 +12,4 @@ class Address(Base):
     city: Mapped[str] = mapped_column(nullable=False)
     street: Mapped[str] = mapped_column(nullable=False)
     house_number: Mapped[int] = mapped_column(nullable=False)
-    extra: Mapped[str] = mapped_column()
+    extra: Mapped[str] = mapped_column(nullable=True)

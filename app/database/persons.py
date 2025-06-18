@@ -10,4 +10,4 @@ class Person(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     account_id: Mapped[int] = mapped_column(ForeignKey("accounts.id"))
     fullname: Mapped[str] = mapped_column(nullable=False)
-    cpf: Mapped[str] = mapped_column()
+    cpf: Mapped[str] = mapped_column(nullable=True)
