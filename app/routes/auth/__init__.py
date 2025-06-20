@@ -2,7 +2,7 @@ import functools
 
 import jwt
 from datetime import datetime, UTC
-from flask import g, session
+from flask import g, session, request
 from flask_openapi3 import APIBlueprint, Tag
 from sqlalchemy import select
 
@@ -17,13 +17,12 @@ tag = Tag(name="Autenticação", description="Gerencia o acesso do usuário à p
 
 @blueprint.before_app_request
 def load_logged_in_user():
-    encoded = session.get("token")
+    encoded = session.get("token") or request.headers.get("token")
 
     if not encoded:
         return
 
-    token = jwt.decode(encoded, SECRET_KEY, algorithm="HS256")
-    print(token)
+    token = jwt.decode(encoded, SECRET_KEY, algorithms="HS256")
 
     if "expiration" not in token:
         return
@@ -36,9 +35,9 @@ def load_logged_in_user():
     if not g.account:
         return
 
-    with DatabaseSession as s:
+    with DatabaseSession() as s:
         statement = select(Account).where(Account.id == g.account).limit(1)
-        g.account = s.scalar(statement)
+        g.account = s.scalar(statement).id
 
 
 def login_required(view):

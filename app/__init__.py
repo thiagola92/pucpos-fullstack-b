@@ -17,7 +17,7 @@ app.config.from_mapping(
     DATABASE=Path(app.instance_path).joinpath("app.sqlite"),
 )
 
-CORS(app)
+CORS(app, supports_credentials=True)
 os.makedirs(app.instance_path, exist_ok=True)
 
 app.cli.add_command(init_db_command)

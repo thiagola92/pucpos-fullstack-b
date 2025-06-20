@@ -5,7 +5,6 @@ from sqlalchemy.orm import sessionmaker
 from werkzeug.security import generate_password_hash
 
 from app.database.accounts import Account
-from app.database.persons import Person
 from app.database.addresses import Address
 from app.database.properties import Property
 from app.database.property_owners import PropertyOwner
@@ -24,13 +23,11 @@ def close_db(e=None):
 def init_db():
     Account.metadata.drop_all(engine)
     Address.metadata.drop_all(engine)
-    Person.metadata.drop_all(engine)
     Property.metadata.drop_all(engine)
     PropertyOwner.metadata.drop_all(engine)
 
     Account.metadata.create_all(engine)
     Address.metadata.create_all(engine)
-    Person.metadata.create_all(engine)
     Property.metadata.create_all(engine)
     PropertyOwner.metadata.create_all(engine)
 
@@ -40,20 +37,14 @@ def init_db():
             Account(
                 email="asdf@asdf.com",
                 password=generate_password_hash("asdf"),
-            )
+            ),
+            Account(
+                email="asdf1@asdf.com",
+                password=generate_password_hash("asdf"),
+            ),
         ]
 
         s.add_all(accounts)
-        s.commit()
-
-        persons = [
-            Person(
-                fullname="Fulaninho Jr.",
-                account_id=accounts[0].id,
-            )
-        ]
-
-        s.add_all(persons)
         s.commit()
 
         addresses = [
@@ -108,31 +99,37 @@ def init_db():
             Property(
                 address_id=addresses[0].id,
                 price=100000000,
+                plan="Vender",
                 photo="template_house_0.svg",
             ),
             Property(
                 address_id=addresses[1].id,
                 price=100000099,
+                plan="Vender",
                 photo="template_house_1.svg",
             ),
             Property(
                 address_id=addresses[2].id,
                 price=200000000,
+                plan="Vender",
                 photo="template_house_2.svg",
             ),
             Property(
                 address_id=addresses[3].id,
                 price=250050099,
+                plan="Vender",
                 photo="template_house_3.svg",
             ),
             Property(
                 address_id=addresses[4].id,
                 price=50000000,
+                plan="Vender",
                 photo="template_house_4.svg",
             ),
             Property(
                 address_id=addresses[5].id,
-                price=000,
+                price=500,
+                plan="Alugar",
                 photo="template_house_5.svg",
             ),
         ]
@@ -142,27 +139,27 @@ def init_db():
 
         property_owneres = [
             PropertyOwner(
-                person_id=accounts[0].id,
+                account_id=accounts[0].id,
                 property_id=properties[0].id,
             ),
             PropertyOwner(
-                person_id=accounts[0].id,
+                account_id=accounts[0].id,
                 property_id=properties[1].id,
             ),
             PropertyOwner(
-                person_id=accounts[0].id,
+                account_id=accounts[0].id,
                 property_id=properties[2].id,
             ),
             PropertyOwner(
-                person_id=accounts[0].id,
+                account_id=accounts[0].id,
                 property_id=properties[3].id,
             ),
             PropertyOwner(
-                person_id=accounts[0].id,
+                account_id=accounts[0].id,
                 property_id=properties[4].id,
             ),
             PropertyOwner(
-                person_id=accounts[0].id,
+                account_id=accounts[1].id,
                 property_id=properties[5].id,
             ),
         ]
