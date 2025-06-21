@@ -53,8 +53,6 @@ def query_by_id(id: str):
     if id == 0 and "account" in g:
         id = g.account
 
-    print("id to query: ", id)
-
     # TODO: use JOIN
     with DatabaseSession() as s:
         owner_statement = select(PropertyOwner).where(PropertyOwner.account_id == id)
