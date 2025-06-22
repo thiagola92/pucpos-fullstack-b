@@ -4,6 +4,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from werkzeug.security import generate_password_hash
 
+from app.database.plans import Plan
 from app.database.accounts import Account
 from app.database.addresses import Address
 from app.database.properties import Property
@@ -21,11 +22,13 @@ def close_db(e=None):
 
 
 def init_db():
+    Plan.metadata.drop_all(engine)
     Account.metadata.drop_all(engine)
     Address.metadata.drop_all(engine)
     Property.metadata.drop_all(engine)
     PropertyOwner.metadata.drop_all(engine)
 
+    Plan.metadata.create_all(engine)
     Account.metadata.create_all(engine)
     Address.metadata.create_all(engine)
     Property.metadata.create_all(engine)
@@ -95,41 +98,55 @@ def init_db():
         s.add_all(addresses)
         s.commit()
 
+        plans = [
+            Plan(
+                id=1,
+                plan="Vender",
+            ),
+            Plan(
+                id=2,
+                plan="Alugar",
+            ),
+        ]
+
+        s.add_all(plans)
+        s.commit()
+
         properties = [
             Property(
                 address_id=addresses[0].id,
                 price=100000000,
-                plan="Vender",
+                plan=1,
                 photo="template_house_0.svg",
             ),
             Property(
                 address_id=addresses[1].id,
                 price=100000099,
-                plan="Vender",
+                plan=1,
                 photo="template_house_1.svg",
             ),
             Property(
                 address_id=addresses[2].id,
                 price=200000000,
-                plan="Vender",
+                plan=1,
                 photo="template_house_2.svg",
             ),
             Property(
                 address_id=addresses[3].id,
                 price=250050099,
-                plan="Vender",
+                plan=1,
                 photo="template_house_3.svg",
             ),
             Property(
                 address_id=addresses[4].id,
                 price=50000000,
-                plan="Vender",
+                plan=1,
                 photo="template_house_4.svg",
             ),
             Property(
                 address_id=addresses[5].id,
                 price=500,
-                plan="Alugar",
+                plan=2,
                 photo="template_house_5.svg",
             ),
         ]

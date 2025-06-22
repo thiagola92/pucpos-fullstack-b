@@ -6,7 +6,7 @@ from flask_cors import CORS
 from flask_openapi3 import OpenAPI, Info
 
 from app.secret import SECRET_KEY
-from app.routes import auth, property, properties
+from app.routes import auth, property, properties, plans
 from app.database import init_db_command, close_db
 
 
@@ -25,6 +25,7 @@ app.teardown_appcontext(close_db)
 app.register_api(auth.blueprint)
 app.register_api(property.blueprint)
 app.register_api(properties.blueprint)
+app.register_api(plans.blueprint)
 
 
 @app.route("/")
