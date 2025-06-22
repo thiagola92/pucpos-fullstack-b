@@ -22,31 +22,28 @@ def get_properties(query: Query):
             return query_by_id(query.account_id)
         else:
             return query_by_street(query.street)
-    except Exception as e:
-        print(e)
-
-    return ("Error", 500)
+    except Exception as exception:
+        print(f"{exception=}")
+        return ("Error", 500)
 
 
 def query_by_street(street: str):
-    # TODO: use JOIN
     with DatabaseSession() as s:
         street = f"%{street}%"
 
-        addr_statement = select(Address).where(Address.street.like(street))
-        addr_rows = {r.id: r.dict() for r in s.scalars(addr_statement).all()}
+        address_statement = select(Address).where(Address.street.like(street))
+        addresses = {r.id: r.dict() for r in s.scalars(address_statement).all()}
 
-        prop_statement = select(Property).where(
-            Property.address_id.in_(addr_rows.keys())
+        property_statement = select(Property).where(
+            Property.address_id.in_(addresses.keys())
         )
-        prop_rows = s.scalars(prop_statement).all()
+        properties = s.scalars(property_statement).all()
+        properties = [r.dict() for r in properties]
 
-        results = [r.dict() for r in prop_rows]
+        for p in properties:
+            p["address"] = addresses[p["address_id"]]
 
-        for r in results:
-            r["address"] = addr_rows[r["address_id"]]
-
-        return results
+        return properties
 
 
 def query_by_id(id: str):
@@ -55,20 +52,18 @@ def query_by_id(id: str):
     if id == 0 and "account" in g:
         id = g.account
 
-    # TODO: use JOIN
     with DatabaseSession() as s:
-        owner_statement = select(PropertyOwner).where(PropertyOwner.account_id == id)
-        prop_ids = [r.property_id for r in s.scalars(owner_statement).all()]
+        owned = select(PropertyOwner).where(PropertyOwner.account_id == id)
+        owned = [r.property_id for r in s.scalars(owned).all()]
 
-        addr_statement = select(Address).where(Address.id.in_(prop_ids))
-        addr_rows = {r.id: r.dict() for r in s.scalars(addr_statement).all()}
+        addresses = select(Address).where(Address.id.in_(owned))
+        addresses = {r.id: r.dict() for r in s.scalars(addresses).all()}
 
-        prop_statement = select(Property).where(Property.id.in_(prop_ids))
-        prop_rows = s.scalars(prop_statement).all()
+        properties = select(Property).where(Property.id.in_(owned))
+        properties = s.scalars(properties).all()
+        properties = [r.dict() for r in properties]
 
-        results = [r.dict() for r in prop_rows]
+        for p in properties:
+            p["address"] = addresses[p["address_id"]]
 
-        for r in results:
-            r["address"] = addr_rows[r["address_id"]]
-
-        return results
+        return properties

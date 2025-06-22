@@ -17,7 +17,6 @@ class RegistrationForm(BaseModel):
 
 @blueprint.post("/register", tags=[tag])
 def register(form: RegistrationForm):
-    request.url
     try:
         with DatabaseSession() as s:
             account = Account(
@@ -26,7 +25,8 @@ def register(form: RegistrationForm):
             )
             s.add(account)
             s.commit()
-    except Exception:
-        return ("Error ao registar", 500)
+    except Exception as exception:
+        print(f"{exception=}")
+        return ("Error", 500)
 
     return ("Criado", 201)

@@ -20,8 +20,8 @@ def get_property(path: Path):
 
             if row:
                 return row.dict()
-    except Exception as e:
-        print(e)
+    except Exception as exception:
+        print(f"{exception=}")
         return ("Error", 500)
 
     return ("Imóvel não encontrado", 404)

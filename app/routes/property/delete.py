@@ -29,6 +29,6 @@ def delete_property(body: Body):
             s.commit()
 
         return ("Removido", 200)
-    except Exception as e:
-        print(e)
+    except Exception as exception:
+        print(f"{exception=}")
         return ("Error", 500)

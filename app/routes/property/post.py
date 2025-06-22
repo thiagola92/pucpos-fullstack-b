@@ -54,6 +54,6 @@ def post_property(body: Body):
             s.commit()
 
         return ("Adicionado", 200)
-    except Exception as e:
-        print(e)
+    except Exception as exception:
+        print(f"{exception=}")
         return ("Error", 500)
