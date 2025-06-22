@@ -31,6 +31,7 @@ def delete_property(body: Body):
 
         for o in owners:
             s.delete(o)
+            s.commit()
 
         s.delete(property)
         s.commit()

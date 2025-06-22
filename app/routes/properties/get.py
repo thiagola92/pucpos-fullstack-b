@@ -18,16 +18,10 @@ class Query(BaseModel):
 
 @blueprint.get("", tags=[tag])
 def get_properties(query: Query):
-    # try:
     if query.account_id > -1:
         return query_by_id(query.account_id)
     else:
         return query_by_street(query.street)
-
-
-# except Exception as exception:
-#     print(f"{exception=}")
-#     return ("Error", 500)
 
 
 def query_by_street(street: str):
@@ -59,19 +53,20 @@ def query_by_id(id: str):
         id = g.account
 
     with DatabaseSession() as s:
-        owners = select(PropertyOwner).where(PropertyOwner.account_id == id)
-        owners = [r.property_id for r in s.scalars(owners).all()]
+        owned = select(PropertyOwner).where(PropertyOwner.account_id == id)
+        owned = [r.property_id for r in s.scalars(owned).all()]
 
-        addresses = select(Address).where(Address.id.in_(owners))
+        properties = select(Property).where(Property.id.in_(owned))
+        properties = s.scalars(properties).all()
+        properties = [r.dict() for r in properties]
+
+        addresses = [p["address_id"] for p in properties]
+        addresses = select(Address).where(Address.id.in_(addresses))
         addresses = {r.id: r.dict() for r in s.scalars(addresses).all()}
 
         plans = select(Plan)
         plans = s.scalars(plans).all()
         plans = {p.id: p.dict() for p in plans}
-
-        properties = select(Property).where(Property.id.in_(owners))
-        properties = s.scalars(properties).all()
-        properties = [r.dict() for r in properties]
 
         for p in properties:
             p["address"] = addresses[p["address_id"]]
