@@ -50,6 +50,8 @@ def query_by_street(street: str):
 
 
 def query_by_id(id: str):
+    load_logged_in_user()
+
     if id == 0 and "account" in g:
         id = g.account
 

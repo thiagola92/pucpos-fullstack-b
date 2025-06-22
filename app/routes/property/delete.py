@@ -1,8 +1,10 @@
 from pydantic import BaseModel
+from flask import g
 
 from app.database import DatabaseSession
 from app.database.properties import Property
 from app.routes.property import blueprint, tag
+from app.routes.auth import load_logged_in_user
 
 
 class Body(BaseModel):
@@ -11,6 +13,11 @@ class Body(BaseModel):
 
 @blueprint.delete("", tags=[tag])
 def delete_property(body: Body):
+    load_logged_in_user()
+
+    if "account" not in g:
+        return ("Não autenticado", 401)
+
     try:
         with DatabaseSession() as s:
             property = s.get(Property, body.id)

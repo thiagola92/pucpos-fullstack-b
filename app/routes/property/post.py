@@ -1,10 +1,12 @@
-from sqlalchemy import select
 from pydantic import BaseModel
+from flask import g
 
 from app.database import DatabaseSession
 from app.database.properties import Property
+from app.database.property_owners import PropertyOwner
 from app.database.addresses import Address
 from app.routes.property import blueprint, tag
+from app.routes.auth import load_logged_in_user
 
 
 class Body(BaseModel):
@@ -15,23 +17,23 @@ class Body(BaseModel):
 
 @blueprint.post("", tags=[tag])
 def post_property(body: Body):
+    load_logged_in_user()
+
+    if not g.account:
+        return ("Não autenticado", 401)
+
     try:
         with DatabaseSession() as s:
-            statement = select(Address).where(Address.street == body.street)
-            address = s.scalars(statement).first()
+            address = Address(
+                country="Brasil",
+                state="RJ",
+                city="Rio de Janeiro",
+                street=body.street,
+                house_number=50,
+            )
 
-            if not address:
-                address = Address(
-                    country="Brasil",
-                    state="RJ",
-                    city="Rio de Janeiro",
-                    street=body.street,
-                    house_number=50,
-                )
-
-                s.add(address)
-                s.commit()
-                address = s.scalars(statement).first()
+            s.add(address)
+            s.commit()
 
             property = Property(
                 address_id=address.id,
@@ -41,6 +43,14 @@ def post_property(body: Body):
             )
 
             s.add(property)
+            s.commit()
+
+            property_owner = PropertyOwner(
+                account_id=g.account,
+                property_id=property.id,
+            )
+
+            s.add(property_owner)
             s.commit()
 
         return ("Adicionado", 200)
