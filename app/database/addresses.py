@@ -4,6 +4,13 @@ from app.database.base import Base
 
 
 class Address(Base):
+    """
+    Representa um endereço físico.
+
+    NOTE: Este projeto não utiliza todas as informações
+    de um endereço.
+    """
+
     __tablename__ = "addresses"
 
     id: Mapped[int] = mapped_column(primary_key=True)

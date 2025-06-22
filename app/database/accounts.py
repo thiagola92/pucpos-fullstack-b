@@ -4,6 +4,10 @@ from app.database.base import Base
 
 
 class Account(Base):
+    """
+    Representa uma conta do usuário.
+    """
+
     __tablename__ = "accounts"
 
     id: Mapped[int] = mapped_column(primary_key=True)

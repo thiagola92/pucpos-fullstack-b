@@ -5,6 +5,10 @@ from app.database.base import Base
 
 
 class Property(Base):
+    """
+    Representa um imóvel e suas informações apresentadas no site.
+    """
+
     __tablename__ = "properties"
 
     id: Mapped[int] = mapped_column(primary_key=True)
