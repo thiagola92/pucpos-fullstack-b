@@ -12,7 +12,7 @@ from app.routes.auth import load_logged_in_user
 class Body(BaseModel):
     street: str
     price: int
-    plan: str
+    plan_id: int
 
 
 @blueprint.post("", tags=[tag])
@@ -22,38 +22,34 @@ def post_property(body: Body):
     if not g.account:
         return ("Não autenticado", 401)
 
-    try:
-        with DatabaseSession() as s:
-            address = Address(
-                country="Brasil",
-                state="RJ",
-                city="Rio de Janeiro",
-                street=body.street,
-                house_number=50,
-            )
+    with DatabaseSession() as s:
+        address = Address(
+            country="Brasil",
+            state="RJ",
+            city="Rio de Janeiro",
+            street=body.street,
+            house_number=50,
+        )
 
-            s.add(address)
-            s.commit()
+        s.add(address)
+        s.commit()
 
-            property = Property(
-                address_id=address.id,
-                price=body.price,
-                plan=body.plan,
-                photo="template_house_0.svg",
-            )
+        property = Property(
+            address_id=address.id,
+            price=body.price,
+            plan_id=body.plan_id,
+            photo="template_house_0.svg",
+        )
 
-            s.add(property)
-            s.commit()
+        s.add(property)
+        s.commit()
 
-            property_owner = PropertyOwner(
-                account_id=g.account,
-                property_id=property.id,
-            )
+        property_owner = PropertyOwner(
+            account_id=g.account,
+            property_id=property.id,
+        )
 
-            s.add(property_owner)
-            s.commit()
+        s.add(property_owner)
+        s.commit()
 
-        return ("Adicionado", 200)
-    except Exception as exception:
-        print(f"{exception=}")
-        return ("Error", 500)
+    return ("Adicionado", 200)

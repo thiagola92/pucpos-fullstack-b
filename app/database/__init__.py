@@ -101,11 +101,11 @@ def init_db():
         plans = [
             Plan(
                 id=1,
-                plan="Vender",
+                action="Vender",
             ),
             Plan(
                 id=2,
-                plan="Alugar",
+                action="Alugar",
             ),
         ]
 
@@ -116,37 +116,37 @@ def init_db():
             Property(
                 address_id=addresses[0].id,
                 price=100000000,
-                plan=1,
+                plan_id=1,
                 photo="template_house_0.svg",
             ),
             Property(
                 address_id=addresses[1].id,
                 price=100000099,
-                plan=1,
+                plan_id=1,
                 photo="template_house_1.svg",
             ),
             Property(
                 address_id=addresses[2].id,
                 price=200000000,
-                plan=1,
+                plan_id=1,
                 photo="template_house_2.svg",
             ),
             Property(
                 address_id=addresses[3].id,
                 price=250050099,
-                plan=1,
+                plan_id=1,
                 photo="template_house_3.svg",
             ),
             Property(
                 address_id=addresses[4].id,
                 price=50000000,
-                plan=1,
+                plan_id=1,
                 photo="template_house_4.svg",
             ),
             Property(
                 address_id=addresses[5].id,
                 price=500,
-                plan=2,
+                plan_id=2,
                 photo="template_house_5.svg",
             ),
         ]

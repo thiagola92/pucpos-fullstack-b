@@ -5,6 +5,7 @@ from flask import g
 from app.database import DatabaseSession
 from app.database.properties import Property
 from app.database.addresses import Address
+from app.database.plans import Plan
 from app.database.property_owners import PropertyOwner
 from app.routes.properties import blueprint, tag
 from app.routes.auth import load_logged_in_user
@@ -17,31 +18,36 @@ class Query(BaseModel):
 
 @blueprint.get("", tags=[tag])
 def get_properties(query: Query):
-    try:
-        if query.account_id > -1:
-            return query_by_id(query.account_id)
-        else:
-            return query_by_street(query.street)
-    except Exception as exception:
-        print(f"{exception=}")
-        return ("Error", 500)
+    # try:
+    if query.account_id > -1:
+        return query_by_id(query.account_id)
+    else:
+        return query_by_street(query.street)
+
+
+# except Exception as exception:
+#     print(f"{exception=}")
+#     return ("Error", 500)
 
 
 def query_by_street(street: str):
     with DatabaseSession() as s:
         street = f"%{street}%"
 
-        address_statement = select(Address).where(Address.street.like(street))
-        addresses = {r.id: r.dict() for r in s.scalars(address_statement).all()}
+        addresses = select(Address).where(Address.street.like(street))
+        addresses = {r.id: r.dict() for r in s.scalars(addresses).all()}
 
-        property_statement = select(Property).where(
-            Property.address_id.in_(addresses.keys())
-        )
-        properties = s.scalars(property_statement).all()
+        plans = select(Plan)
+        plans = s.scalars(plans).all()
+        plans = {p.id: p.dict() for p in plans}
+
+        properties = select(Property).where(Property.address_id.in_(addresses.keys()))
+        properties = s.scalars(properties).all()
         properties = [r.dict() for r in properties]
 
         for p in properties:
             p["address"] = addresses[p["address_id"]]
+            p["plan"] = plans[p["plan_id"]]
 
         return properties
 
@@ -53,17 +59,22 @@ def query_by_id(id: str):
         id = g.account
 
     with DatabaseSession() as s:
-        owned = select(PropertyOwner).where(PropertyOwner.account_id == id)
-        owned = [r.property_id for r in s.scalars(owned).all()]
+        owners = select(PropertyOwner).where(PropertyOwner.account_id == id)
+        owners = [r.property_id for r in s.scalars(owners).all()]
 
-        addresses = select(Address).where(Address.id.in_(owned))
+        addresses = select(Address).where(Address.id.in_(owners))
         addresses = {r.id: r.dict() for r in s.scalars(addresses).all()}
 
-        properties = select(Property).where(Property.id.in_(owned))
+        plans = select(Plan)
+        plans = s.scalars(plans).all()
+        plans = {p.id: p.dict() for p in plans}
+
+        properties = select(Property).where(Property.id.in_(owners))
         properties = s.scalars(properties).all()
         properties = [r.dict() for r in properties]
 
         for p in properties:
             p["address"] = addresses[p["address_id"]]
+            p["plan"] = plans[p["plan_id"]]
 
         return properties

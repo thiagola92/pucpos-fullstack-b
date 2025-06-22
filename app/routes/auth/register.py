@@ -16,16 +16,12 @@ class RegistrationForm(BaseModel):
 
 @blueprint.post("/register", tags=[tag])
 def register(form: RegistrationForm):
-    try:
-        with DatabaseSession() as s:
-            account = Account(
-                email=form.email,
-                password=generate_password_hash(form.password),
-            )
-            s.add(account)
-            s.commit()
-    except Exception as exception:
-        print(f"{exception=}")
-        return ("Error", 500)
+    with DatabaseSession() as s:
+        account = Account(
+            email=form.email,
+            password=generate_password_hash(form.password),
+        )
+        s.add(account)
+        s.commit()
 
     return ("Criado", 201)
