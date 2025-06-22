@@ -1,6 +1,6 @@
 from sqlalchemy import select
 from pydantic import BaseModel
-from flask import g, session
+from flask import g
 
 from app.database import DatabaseSession
 from app.database.properties import Property
@@ -63,9 +63,7 @@ def query_by_id(id: str):
         addr_statement = select(Address).where(Address.id.in_(prop_ids))
         addr_rows = {r.id: r.dict() for r in s.scalars(addr_statement).all()}
 
-        prop_statement = select(Property).where(
-            Property.address_id.in_(addr_rows.keys())
-        )
+        prop_statement = select(Property).where(Property.id.in_(prop_ids))
         prop_rows = s.scalars(prop_statement).all()
 
         results = [r.dict() for r in prop_rows]

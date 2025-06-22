@@ -16,6 +16,7 @@ class Address(Base):
 
     def dict(self) -> dict:
         return {
+            "id": self.id,
             "country": self.country,
             "state": self.state,
             "city": self.city,

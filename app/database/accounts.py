@@ -11,5 +11,10 @@ class Account(Base):
     phone: Mapped[str] = mapped_column(nullable=True, unique=True)
     password: Mapped[str] = mapped_column(nullable=False, unique=True)
 
-    def __repr__(self) -> str:
-        return f"Account(id={self.id!r}, email={self.email!r}, phone={self.phone!r}, password={self.password!r})"
+    def dict(self):
+        return {
+            "id": self.id,
+            "email": self.email,
+            "phone": self.phone,
+            "password": self.password,
+        }
