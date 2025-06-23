@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import select, or_
 from pydantic import BaseModel
 from flask import g
 
@@ -12,6 +12,8 @@ from app.routes.auth import load_logged_in_user
 
 
 class Query(BaseModel):
+    plan: int = 3
+    type: int = 3
     street: str = ""
     account_id: int = -1
 
@@ -21,10 +23,10 @@ def get_properties(query: Query):
     if query.account_id > -1:
         return query_by_id(query.account_id)
     else:
-        return query_by_street(query.street)
+        return query_by_street(query.plan, query.type, query.street)
 
 
-def query_by_street(street: str):
+def query_by_street(plan: int, type_: int, street: str):
     with DatabaseSession() as s:
         street = f"%{street}%"
 
@@ -36,6 +38,16 @@ def query_by_street(street: str):
         plans = {p.id: p.dict() for p in plans}
 
         properties = select(Property).where(Property.address_id.in_(addresses.keys()))
+
+        if plan == 3:
+            properties = properties.where(
+                or_(Property.plan_id == 1, Property.plan_id == 2)
+            )
+        elif plan == 2:
+            properties = properties.where(Property.plan_id == 2)
+        elif plan == 1:
+            properties = properties.where(Property.plan_id == 1)
+
         properties = s.scalars(properties).all()
         properties = [r.dict() for r in properties]
 
