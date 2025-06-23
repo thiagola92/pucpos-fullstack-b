@@ -13,6 +13,7 @@ class Body(BaseModel):
     street: str
     price: int
     plan_id: int
+    type_id: int
 
 
 @blueprint.post("", tags=[tag])
@@ -38,6 +39,7 @@ def post_property(body: Body):
             address_id=address.id,
             price=body.price,
             plan_id=body.plan_id,
+            type_id=body.type_id,
             photo="template_house_0.svg",
         )
 
