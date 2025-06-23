@@ -15,6 +15,7 @@ class Property(Base):
     address_id: Mapped[int] = mapped_column(ForeignKey("addresses.id"), nullable=False)
     price: Mapped[int] = mapped_column(nullable=False)
     plan_id: Mapped[int] = mapped_column(ForeignKey("plans.id"), nullable=False)
+    type_id: Mapped[int] = mapped_column(ForeignKey("types.id"), nullable=False)
     photo: Mapped[str] = mapped_column(nullable=True)
 
     def dict(self):
@@ -23,5 +24,6 @@ class Property(Base):
             "address_id": self.address_id,
             "price": self.price,
             "plan_id": self.plan_id,
+            "type_id": self.type_id,
             "photo": self.photo,
         }
