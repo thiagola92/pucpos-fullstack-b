@@ -1,5 +1,5 @@
 from werkzeug.security import generate_password_hash
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, ConfigDict
 
 from app.routes.auth import blueprint, tag
 from app.database import DatabaseSession
@@ -12,6 +12,8 @@ class RegistrationForm(BaseModel):
     name: str
     cpf: str
     phone: str
+
+    model_config = ConfigDict(coerce_numbers_to_str=True)
 
 
 @blueprint.post("/register", tags=[tag])
