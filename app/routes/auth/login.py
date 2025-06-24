@@ -28,8 +28,8 @@ responses = {
 
 
 class AuthLoginPost(BaseModel):
-    email: EmailStr
-    password: str
+    email: EmailStr = "asdf@asdf.com"
+    password: str = "asdf"
 
 
 @blueprint.post("/login", tags=[tag], responses=responses)
