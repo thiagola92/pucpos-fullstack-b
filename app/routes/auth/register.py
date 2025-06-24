@@ -6,7 +6,7 @@ from app.database import DatabaseSession
 from app.database.accounts import Account
 
 
-class RegistrationForm(BaseModel):
+class AuthRegisterPost(BaseModel):
     email: EmailStr
     password: str
     name: str
@@ -17,7 +17,7 @@ class RegistrationForm(BaseModel):
 
 
 @blueprint.post("/register", tags=[tag])
-def register(form: RegistrationForm):
+def register(form: AuthRegisterPost):
     with DatabaseSession() as s:
         account = Account(
             email=form.email,

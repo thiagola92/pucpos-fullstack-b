@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from flask import g
 
 from app.database import DatabaseSession
@@ -9,15 +9,15 @@ from app.routes.property import blueprint, tag, security_w
 from app.routes.auth import load_logged_in_user
 
 
-class Body(BaseModel):
-    street: str
-    price: int | float
-    plan_id: int
-    type_id: int
+class PropertyPost(BaseModel):
+    street: str = Field(description="A rua do imóvel.")
+    price: int | float = Field(1, description="O preço do imóvel (mínimo de 1 real).")
+    plan_id: int = Field(description="O identificador do plano do imóvel.")
+    type_id: int = Field(description="O identificador do tipo de imóvel.")
 
 
 @blueprint.post("", tags=[tag], security=security_w)
-def post_property(body: Body):
+def post_property(body: PropertyPost):
     load_logged_in_user()
 
     if not g.account:
@@ -37,6 +37,8 @@ def post_property(body: Body):
 
         if isinstance(body.price, float):
             body.price = int(body.price * 100)
+        else:
+            body.price = body.price * 100
 
         property = Property(
             address_id=address.id,

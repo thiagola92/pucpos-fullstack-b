@@ -1,5 +1,5 @@
 from sqlalchemy import select, or_
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from flask import g
 
 from app.database import DatabaseSession
@@ -12,11 +12,33 @@ from app.routes.properties import blueprint, tag, security_r
 from app.routes.auth import load_logged_in_user
 
 
+plan_description = """[Bit field](https://en.wikipedia.org/wiki/Bit_field) para indicar os planos dos imóveis os quais está buscando.  
+1 - Imóveis à venda  
+2 - Imóveis para alugar  
+---  
+"""
+
+type_description = """[Bit field](https://en.wikipedia.org/wiki/Bit_field) para indicar os tipos de imóveis os quais está buscando.  
+1 - Casa  
+2 - Apartamento  
+---  
+"""
+
+account_description = """O Identificador da conta o qual deseja ver os imóveis.  
+**3** - Imóveis da conta com identificador 3  
+**2** - Imóveis da conta com identificador 2  
+**1** - Imóveis da conta com identificador 1  
+**0** - Imóveis da sua conta (requer estar autenticado)  
+**-1** - Imóveis de todas as contas  
+---  
+"""
+
+
 class Query(BaseModel):
-    plan: int = 3
-    type: int = 3
-    street: str = ""
-    account_id: int = -1
+    plan: int = Field(3, description=plan_description)
+    type: int = Field(3, description=type_description)
+    street: str = Field("", description="A rua do imóvel")
+    account_id: int = Field(-1, description=account_description)
 
 
 @blueprint.get("", tags=[tag], security=security_r)

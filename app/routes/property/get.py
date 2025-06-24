@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from sqlalchemy import select
 
 from app.database import DatabaseSession
@@ -7,7 +7,7 @@ from app.routes.property import blueprint, tag
 
 
 class Path(BaseModel):
-    id: int
+    id: int = Field(description="O identificador do imóvel.")
 
 
 @blueprint.get("<int:id>", tags=[tag])

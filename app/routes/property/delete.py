@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from sqlalchemy import select
 from flask import g
 
@@ -9,12 +9,12 @@ from app.routes.property import blueprint, tag, security_w
 from app.routes.auth import load_logged_in_user
 
 
-class Body(BaseModel):
-    id: int
+class PropertyDelete(BaseModel):
+    id: int = Field(description="O Identificador do imóvel a ser deletado.")
 
 
 @blueprint.delete("", tags=[tag], security=security_w)
-def delete_property(body: Body):
+def delete_property(body: PropertyDelete):
     load_logged_in_user()
 
     if "account" not in g:

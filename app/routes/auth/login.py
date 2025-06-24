@@ -10,13 +10,13 @@ from app.database import DatabaseSession
 from app.database.accounts import Account
 
 
-class LoginForm(BaseModel):
+class AuthLoginPost(BaseModel):
     email: EmailStr
     password: str
 
 
 @blueprint.post("/login", tags=[tag])
-def login(form: LoginForm):
+def login(form: AuthLoginPost):
     with DatabaseSession() as s:
         statement = select(Account).where(Account.email == form.email).limit(1)
         account = s.scalar(statement)
