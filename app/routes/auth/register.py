@@ -4,6 +4,10 @@ from pydantic import BaseModel, EmailStr, ConfigDict
 from app.routes.auth import blueprint, tag
 from app.database import DatabaseSession
 from app.database.accounts import Account
+from app.routes.generic import generic201
+
+
+responses = {201: generic201}
 
 
 class AuthRegisterPost(BaseModel):
@@ -16,7 +20,7 @@ class AuthRegisterPost(BaseModel):
     model_config = ConfigDict(coerce_numbers_to_str=True)
 
 
-@blueprint.post("/register", tags=[tag])
+@blueprint.post("/register", tags=[tag], responses=responses)
 def register(form: AuthRegisterPost):
     with DatabaseSession() as s:
         account = Account(

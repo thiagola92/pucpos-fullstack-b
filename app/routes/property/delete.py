@@ -7,27 +7,38 @@ from app.database.properties import Property
 from app.database.property_owners import PropertyOwner
 from app.routes.property import blueprint, tag, security_w
 from app.routes.auth import load_logged_in_user
+from app.routes.generic import generic200, generic401
+
+
+description = "Deleta um imóvel."
+
+responses = {200: generic200, 401: generic401}
 
 
 class PropertyDelete(BaseModel):
     id: int = Field(description="O Identificador do imóvel a ser deletado.")
 
 
-@blueprint.delete("", tags=[tag], security=security_w)
+@blueprint.delete(
+    "", tags=[tag], description=description, security=security_w, responses=responses
+)
 def delete_property(body: PropertyDelete):
     load_logged_in_user()
 
     if "account" not in g:
-        return ("Não autenticado", 401)
+        return ("Não autorizado", 401)
 
     with DatabaseSession() as s:
         property = s.get(Property, body.id)
 
         if not property:
-            return ("Imóvel não encontrado", 404)
+            return ("Não encontrado", 404)
 
         owners = select(PropertyOwner).where(PropertyOwner.property_id == property.id)
         owners = s.scalars(owners).all()
+
+        if not any([o.account_id == g.account for o in owners]):
+            return ("Não autorizado", 401)
 
         for o in owners:
             s.delete(o)
@@ -36,4 +47,4 @@ def delete_property(body: PropertyDelete):
         s.delete(property)
         s.commit()
 
-    return ("Removido", 200)
+    return ("Sucesso", 200)

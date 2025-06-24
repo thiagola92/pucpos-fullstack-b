@@ -100,7 +100,6 @@ def query_by_id(id: str):
 
     if id == 0 and "account" in g:
         id = g.account
-    print(id)
 
     with DatabaseSession() as s:
         owned = select(PropertyOwner).where(PropertyOwner.account_id == id)

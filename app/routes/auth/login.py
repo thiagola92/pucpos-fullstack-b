@@ -8,6 +8,23 @@ from app.secret import SECRET_KEY
 from app.routes.auth import blueprint, tag
 from app.database import DatabaseSession
 from app.database.accounts import Account
+from app.routes.generic import generic400
+
+
+responses = {
+    200: {
+        "content": {
+            "text/plain": {
+                "schema": {
+                    "type": "string",
+                    "example": "eyJhbGciOiJIUzI1N4IsInR5cCI6IkpXVCJ9.eyJhY2NvdW53X2lkIjoiMSIsImV4cGlyYXRpb24iOjE3NTA4MjIwMTQuNDQ0MDQxfQ.5m821-DNq6Fzi4jnmjJLveYcn63OPcWGuG7pdCKksC4",
+                }
+            }
+        },
+        "description": "O token a ser utilizado na autênticação.",
+    },
+    400: generic400,
+}
 
 
 class AuthLoginPost(BaseModel):
@@ -15,7 +32,7 @@ class AuthLoginPost(BaseModel):
     password: str
 
 
-@blueprint.post("/login", tags=[tag])
+@blueprint.post("/login", tags=[tag], responses=responses)
 def login(form: AuthLoginPost):
     with DatabaseSession() as s:
         statement = select(Account).where(Account.email == form.email).limit(1)
