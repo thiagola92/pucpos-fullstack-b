@@ -11,7 +11,7 @@ from app.routes.auth import load_logged_in_user
 
 class Body(BaseModel):
     street: str
-    price: int
+    price: int | float
     plan_id: int
     type_id: int
 
@@ -34,6 +34,9 @@ def post_property(body: Body):
 
         s.add(address)
         s.commit()
+
+        if isinstance(body.price, float):
+            body.price = int(body.price * 100)
 
         property = Property(
             address_id=address.id,
