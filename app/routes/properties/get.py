@@ -8,7 +8,7 @@ from app.database.addresses import Address
 from app.database.plans import Plan
 from app.database.types import Type
 from app.database.property_owners import PropertyOwner
-from app.routes.properties import blueprint, tag
+from app.routes.properties import blueprint, tag, security_r
 from app.routes.auth import load_logged_in_user
 
 
@@ -19,7 +19,7 @@ class Query(BaseModel):
     account_id: int = -1
 
 
-@blueprint.get("", tags=[tag])
+@blueprint.get("", tags=[tag], security=security_r)
 def get_properties(query: Query):
     if query.account_id > -1:
         return query_by_id(query.account_id)
@@ -78,6 +78,7 @@ def query_by_id(id: str):
 
     if id == 0 and "account" in g:
         id = g.account
+    print(id)
 
     with DatabaseSession() as s:
         owned = select(PropertyOwner).where(PropertyOwner.account_id == id)

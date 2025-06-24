@@ -11,7 +11,19 @@ from app.database import init_db_command, close_db
 
 
 info = Info(title="House API", version="1.0.0")
-app = OpenAPI(__name__, info=info, instance_relative_config=True)
+security_schemes = {
+    "api_key": {
+        "type": "apiKey",
+        "name": "token",
+        "in": "header",
+    }
+}
+app = OpenAPI(
+    __name__,
+    info=info,
+    instance_relative_config=True,
+    security_schemes=security_schemes,
+)
 app.config.from_mapping(
     SECRET_KEY=SECRET_KEY,
     DATABASE=Path(app.instance_path).joinpath("app.sqlite"),

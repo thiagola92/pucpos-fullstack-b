@@ -5,7 +5,7 @@ from flask import g
 from app.database import DatabaseSession
 from app.database.properties import Property
 from app.database.property_owners import PropertyOwner
-from app.routes.property import blueprint, tag
+from app.routes.property import blueprint, tag, security_w
 from app.routes.auth import load_logged_in_user
 
 
@@ -13,7 +13,7 @@ class Body(BaseModel):
     id: int
 
 
-@blueprint.delete("", tags=[tag])
+@blueprint.delete("", tags=[tag], security=security_w)
 def delete_property(body: Body):
     load_logged_in_user()
 
