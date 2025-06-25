@@ -7,6 +7,15 @@ from app.database.property_owners import PropertyOwner
 from app.database.addresses import Address
 from app.routes.property import blueprint, tag, security_w
 from app.routes.auth import load_logged_in_user
+from app.routes.generic import generic201, generic401
+
+
+description = "Cria um imóvel."
+
+responses = {
+    200: generic201,
+    401: generic401,
+}
 
 
 class PropertyPost(BaseModel):
@@ -16,7 +25,9 @@ class PropertyPost(BaseModel):
     type_id: int = Field(description="O identificador do tipo de imóvel.")
 
 
-@blueprint.post("", tags=[tag], security=security_w)
+@blueprint.post(
+    "", tags=[tag], description=description, responses=responses, security=security_w
+)
 def post_property(body: PropertyPost):
     load_logged_in_user()
 
@@ -59,4 +70,4 @@ def post_property(body: PropertyPost):
         s.add(property_owner)
         s.commit()
 
-    return ("Adicionado", 200)
+    return ("Criado", 201)

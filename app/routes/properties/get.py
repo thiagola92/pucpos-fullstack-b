@@ -12,6 +12,45 @@ from app.routes.properties import blueprint, tag, security_r
 from app.routes.auth import load_logged_in_user
 
 
+description = "Busca imóveis."
+
+responses = {
+    200: {
+        "content": {
+            "application/json": {
+                "schema": {
+                    "type": "object",
+                    "example": """[{
+                        "address": {
+                            "city": "Rio de Janeiro",
+                            "country": "Brasil",
+                            "extra": "",
+                            "house_number": 20,
+                            "id": 1,
+                            "state": "RJ",
+                            "street": "Av. Padre Leonel Franca"
+                        },
+                        "address_id": 1,
+                        "id": 1,
+                        "photo": "template_house_0.svg",
+                        "plan": {
+                            "action": "Vender",
+                            "id": 1
+                        },
+                        "plan_id": 1,
+                        "price": 100000000,
+                        "type": {
+                            "id": 1,
+                            "name": "Casa"
+                        },
+                        "type_id": 1
+                    }]""",
+                },
+            }
+        }
+    }
+}
+
 plan_description = """[Bit field](https://en.wikipedia.org/wiki/Bit_field) para indicar os planos dos imóveis os quais está buscando.  
 1 - Imóveis à venda  
 2 - Imóveis para alugar  
@@ -41,7 +80,9 @@ class Query(BaseModel):
     account_id: int = Field(-1, description=account_description)
 
 
-@blueprint.get("", tags=[tag], security=security_r)
+@blueprint.get(
+    "", tags=[tag], description=description, responses=responses, security=security_r
+)
 def get_properties(query: Query):
     if query.account_id > -1:
         return query_by_id(query.account_id)

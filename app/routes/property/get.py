@@ -7,7 +7,7 @@ from app.routes.property import blueprint, tag
 from app.routes.generic import generic404
 
 
-class PropertyResponse(BaseModel):
+class PropertyGetResponse(BaseModel):
     id: int
     address_id: int
     price: int
@@ -20,7 +20,7 @@ description = "Pega informações de um imóvel."
 
 responses = {
     404: generic404,
-    200: PropertyResponse,
+    200: PropertyGetResponse,
 }
 
 
