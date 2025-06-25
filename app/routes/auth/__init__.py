@@ -17,12 +17,18 @@ tag = Tag(name="Autenticação", description="Gerencia o acesso do usuário à p
 
 @blueprint.before_app_request
 def load_logged_in_user():
+    g.account = None
+
     encoded = session.get("token") or request.headers.get("token")
 
     if not encoded:
         return
 
-    token = jwt.decode(encoded, SECRET_KEY, algorithms="HS256")
+    try:
+        token = jwt.decode(encoded, SECRET_KEY, algorithms="HS256")
+    except Exception as e:
+        print(f'Fail to decode: "{encoded}"\nError: {e}')
+        return
 
     if "expiration" not in token:
         return

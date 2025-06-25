@@ -139,7 +139,7 @@ def query_by_street(query: Query):
 def query_by_id(id: str):
     load_logged_in_user()
 
-    if id == 0 and "account" in g:
+    if id == 0 and g.account:
         id = g.account
 
     with DatabaseSession() as s:

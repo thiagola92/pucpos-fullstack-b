@@ -6,7 +6,7 @@ from app.database import DatabaseSession
 from app.database.properties import Property
 from app.database.property_owners import PropertyOwner
 from app.routes.property import blueprint, tag, security_w
-from app.routes.auth import load_logged_in_user
+from app.routes.auth import load_logged_in_user, login_required
 from app.routes.generic import generic200, generic401
 
 
@@ -22,11 +22,9 @@ class PropertyDelete(BaseModel):
 @blueprint.delete(
     "", tags=[tag], description=description, security=security_w, responses=responses
 )
+@login_required
 def delete_property(body: PropertyDelete):
     load_logged_in_user()
-
-    if "account" not in g:
-        return ("Não autorizado", 401)
 
     with DatabaseSession() as s:
         property = s.get(Property, body.id)

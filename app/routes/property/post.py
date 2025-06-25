@@ -6,7 +6,7 @@ from app.database.properties import Property
 from app.database.property_owners import PropertyOwner
 from app.database.addresses import Address
 from app.routes.property import blueprint, tag, security_w
-from app.routes.auth import load_logged_in_user
+from app.routes.auth import load_logged_in_user, login_required
 from app.routes.generic import generic201, generic401
 
 
@@ -28,12 +28,8 @@ class PropertyPost(BaseModel):
 @blueprint.post(
     "", tags=[tag], description=description, responses=responses, security=security_w
 )
+@login_required
 def post_property(body: PropertyPost):
-    load_logged_in_user()
-
-    if not g.account:
-        return ("Não autenticado", 401)
-
     with DatabaseSession() as s:
         address = Address(
             country="Brasil",
