@@ -3,6 +3,9 @@ from sqlalchemy import select
 
 from app.database import DatabaseSession
 from app.database.properties import Property
+from app.database.plans import Plan
+from app.database.types import Type
+from app.database.addresses import Address
 from app.routes.property import blueprint, tag
 from app.routes.generic import generic404
 
@@ -30,12 +33,34 @@ class PropertyGet(BaseModel):
 
 @blueprint.get("<int:id>", tags=[tag], description=description, responses=responses)
 def get_property(path: PropertyGet):
-    statement = select(Property).where(Property.id == path.id)
+    property = select(Property).where(Property.id == path.id)
 
     with DatabaseSession() as s:
-        row = s.scalars(statement).first()
+        property = s.scalars(property).first()
 
-        if row:
-            return row.dict()
+        address = select(Address).where(Address.id == property.address_id)
+        address = s.scalars(address).first()
+
+        if not address:
+            ("Não encontrado", 404)
+
+        address = address.dict()
+
+        plans = select(Plan)
+        plans = s.scalars(plans).all()
+        plans = {t.id: t.dict() for t in plans}
+
+        types = select(Type)
+        types = s.scalars(types).all()
+        types = {p.id: p.dict() for p in types}
+
+        property = property.dict()
+
+        if property:
+            property["plan"] = plans[property["plan_id"]]
+            property["type"] = types[property["type_id"]]
+            property["address"] = address
+
+            return property
 
     return ("Não encontrado", 404)
