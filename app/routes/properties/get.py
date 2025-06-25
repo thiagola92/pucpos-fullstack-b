@@ -158,13 +158,13 @@ def query_by_id(id: str):
         plans = s.scalars(plans).all()
         plans = {p.id: p.dict() for p in plans}
 
-        types = select(Plan)
+        types = select(Type)
         types = s.scalars(types).all()
         types = {p.id: p.dict() for p in types}
 
         for p in properties:
             p["address"] = addresses[p["address_id"]]
             p["plan"] = plans[p["plan_id"]]
-            p["type"] = plans[p["type_id"]]
+            p["type"] = types[p["type_id"]]
 
         return properties
