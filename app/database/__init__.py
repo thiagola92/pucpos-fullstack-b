@@ -1,6 +1,6 @@
 import click
 from pathlib import Path
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, inspect
 from sqlalchemy.orm import sessionmaker
 from werkzeug.security import generate_password_hash
 
@@ -15,6 +15,7 @@ directory = Path("./instance")
 directory.mkdir(exist_ok=True)
 
 engine = create_engine(f"sqlite:///{directory}/app.db")
+inspector = inspect(engine)
 DatabaseSession = sessionmaker(bind=engine)
 
 
@@ -212,3 +213,10 @@ def init_db():
 def init_db_command():
     init_db()
     click.echo("Database initialized.")
+
+
+tables = inspector.get_table_names()
+
+for t in [Plan, Type, Account, Address, Property, PropertyOwner]:
+    if t.__tablename__ not in tables:
+        init_db()
