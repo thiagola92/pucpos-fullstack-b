@@ -28,7 +28,7 @@ Instale [Python](https://www.python.org/) em sua máquina.
 Criação e ativação do ambiente virtual:  
 ```
 python -m venv venv
-venv\Scripts\activate
+.\venv\Scripts\activate.bat
 ```
 
 Instalação de pacotes Pythons necessários:  
