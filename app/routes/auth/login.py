@@ -30,6 +30,8 @@ responses = {
 class AuthLoginPost(BaseModel):
     email: EmailStr = "asdf@asdf.com"
     password: str = "asdf"
+    
+    model_config = ConfigDict(coerce_numbers_to_str=True)
 
 
 @blueprint.post("/login", tags=[tag], responses=responses)
