@@ -2,7 +2,7 @@ import jwt
 from datetime import datetime, UTC, timedelta
 from werkzeug.security import check_password_hash
 from sqlalchemy import select
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, ConfigDict
 
 from app.secret import SECRET_KEY
 from app.routes.auth import blueprint, tag
