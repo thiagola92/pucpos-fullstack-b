@@ -41,4 +41,4 @@ app.register_api(properties.blueprint)
 
 @app.route("/")
 def index():
-    return redirect("/openapi")
+    return redirect("/openapi/swagger")
