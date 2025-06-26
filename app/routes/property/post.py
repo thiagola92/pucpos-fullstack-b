@@ -6,14 +6,14 @@ from app.database.properties import Property
 from app.database.property_owners import PropertyOwner
 from app.database.addresses import Address
 from app.routes.property import blueprint, tag, security_w
-from app.routes.auth import load_logged_in_user, login_required
+from app.routes.auth import login_required
 from app.routes.generic import generic201, generic401
 
 
 description = "Cria um imóvel."
 
 responses = {
-    200: generic201,
+    201: generic201,
     401: generic401,
 }
 
