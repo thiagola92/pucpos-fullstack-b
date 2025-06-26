@@ -1,6 +1,4 @@
 # Forçando a execução destes código.
-from app.routes.plans.get import *
-from app.routes.types.get import *
 from app.routes.auth.login import *
 from app.routes.auth.logout import *
 from app.routes.auth.register import *
