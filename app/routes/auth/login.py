@@ -1,3 +1,5 @@
+from app.logger import logger
+
 import jwt
 from datetime import datetime, UTC, timedelta
 from werkzeug.security import check_password_hash
@@ -8,7 +10,7 @@ from app.secret import SECRET_KEY
 from app.routes.auth import blueprint, tag
 from app.database import DatabaseSession
 from app.database.accounts import Account
-from app.routes.generic import generic400
+from app.routes.util import generic_message
 
 
 responses = {
@@ -23,34 +25,39 @@ responses = {
         },
         "description": "O token a ser utilizado na autênticação.",
     },
-    400: generic400,
+    400: generic_message(),
+    500: {},
 }
 
 
 class AuthLoginPost(BaseModel):
     email: EmailStr = "asdf@asdf.com"
     password: str = "asdf"
-    
+
     model_config = ConfigDict(coerce_numbers_to_str=True)
 
 
 @blueprint.post("/login", tags=[tag], responses=responses)
 def login(form: AuthLoginPost):
-    with DatabaseSession() as s:
-        statement = select(Account).where(Account.email == form.email).limit(1)
-        account = s.scalar(statement)
+    try:
+        with DatabaseSession() as s:
+            statement = select(Account).where(Account.email == form.email).limit(1)
+            account = s.scalar(statement)
 
-        if account is None:
-            return ("Email incorreto", 400)
+            if account is None:
+                return ("Email incorreto", 400)
 
-        if not check_password_hash(account.password, form.password):
-            return ("Senha incorreta", 400)
+            if not check_password_hash(account.password, form.password):
+                return ("Senha incorreta", 400)
 
-    expiration = datetime.now(UTC) + timedelta(1)
-    encoded = jwt.encode(
-        {"account_id": str(account.id), "expiration": expiration.timestamp()},
-        SECRET_KEY,
-        algorithm="HS256",
-    )
+        expiration = datetime.now(UTC) + timedelta(1)
+        encoded = jwt.encode(
+            {"account_id": str(account.id), "expiration": expiration.timestamp()},
+            SECRET_KEY,
+            algorithm="HS256",
+        )
 
-    return (encoded, 200)
+        return (encoded, 200)
+    except Exception as e:
+        logger.error(e)
+        return ("", 500)

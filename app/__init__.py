@@ -3,7 +3,7 @@ from pathlib import Path
 
 from flask import redirect
 from flask_cors import CORS
-from flask_openapi3 import OpenAPI, Info
+from flask_openapi3 import OpenAPI, Info, Tag
 
 from app.secret import SECRET_KEY
 from app.routes import auth, property, properties
@@ -38,7 +38,9 @@ app.register_api(auth.blueprint)
 app.register_api(property.blueprint)
 app.register_api(properties.blueprint)
 
+tag = Tag(name="Documentação", description="Documentação Swagger")
 
-@app.route("/")
+
+@app.get("/", tags=[tag])
 def index():
     return redirect("/openapi/swagger")

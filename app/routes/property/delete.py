@@ -1,4 +1,6 @@
-from pydantic import BaseModel, Field
+from app.logger import logger
+
+from pydantic import BaseModel
 from sqlalchemy import select
 from flask import g
 
@@ -6,17 +8,17 @@ from app.database import DatabaseSession
 from app.database.properties import Property
 from app.database.property_owners import PropertyOwner
 from app.routes.property import blueprint, tag, security_w
-from app.routes.auth import load_logged_in_user, login_required
-from app.routes.generic import generic200, generic401
+from app.routes.auth import login_required
+from app.routes.fields import PropertyField
 
 
 description = "Deleta um imóvel."
 
-responses = {200: generic200, 401: generic401}
+responses = {200: {}, 204: {}, 401: {}, 500: {}}
 
 
 class PropertyDelete(BaseModel):
-    id: int = Field(description="O Identificador do imóvel a ser deletado.")
+    id: int = PropertyField
 
 
 @blueprint.delete(
@@ -24,25 +26,29 @@ class PropertyDelete(BaseModel):
 )
 @login_required
 def delete_property(body: PropertyDelete):
-    load_logged_in_user()
+    try:
+        with DatabaseSession() as s:
+            property = s.get(Property, body.id)
 
-    with DatabaseSession() as s:
-        property = s.get(Property, body.id)
+            if not property:
+                return ("", 204)
 
-        if not property:
-            return ("Não encontrado", 404)
+            owners = select(PropertyOwner).where(
+                PropertyOwner.property_id == property.id
+            )
+            owners = s.scalars(owners).all()
 
-        owners = select(PropertyOwner).where(PropertyOwner.property_id == property.id)
-        owners = s.scalars(owners).all()
+            if not any([o.account_id == g.account for o in owners]):
+                return ("", 401)
 
-        if not any([o.account_id == g.account for o in owners]):
-            return ("Não autorizado", 401)
+            for o in owners:
+                s.delete(o)
+                s.commit()
 
-        for o in owners:
-            s.delete(o)
+            s.delete(property)
             s.commit()
 
-        s.delete(property)
-        s.commit()
-
-    return ("Sucesso", 200)
+        return ("", 200)
+    except Exception as e:
+        logger.error(e)
+        return ("", 500)

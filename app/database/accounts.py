@@ -13,7 +13,7 @@ class Account(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     email: Mapped[str] = mapped_column(nullable=False, unique=True)
     phone: Mapped[str] = mapped_column(nullable=True, unique=True)
-    password: Mapped[str] = mapped_column(nullable=False, unique=True)
+    password: Mapped[str] = mapped_column(nullable=False, unique=False)
 
     def dict(self):
         return {

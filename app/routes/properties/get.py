@@ -1,3 +1,4 @@
+from app.logger import logger
 from sqlalchemy import select, or_
 from pydantic import BaseModel, Field
 from flask import g
@@ -10,6 +11,7 @@ from app.database.types import Type
 from app.database.property_owners import PropertyOwner
 from app.routes.properties import blueprint, tag, security_r
 from app.routes.auth import load_logged_in_user
+from app.routes.fields import TypeBitField, PlanBitField, StreetField
 
 
 description = "Busca imóveis."
@@ -48,20 +50,9 @@ responses = {
                 },
             }
         }
-    }
+    },
+    500: {},
 }
-
-plan_description = """[Bit field](https://en.wikipedia.org/wiki/Bit_field) para indicar os planos dos imóveis os quais está buscando.  
-1 - Imóveis à venda  
-2 - Imóveis para alugar  
----  
-"""
-
-type_description = """[Bit field](https://en.wikipedia.org/wiki/Bit_field) para indicar os tipos de imóveis os quais está buscando.  
-1 - Casa  
-2 - Apartamento  
----  
-"""
 
 account_description = """O Identificador da conta o qual deseja ver os imóveis.  
 **3** - Imóveis da conta com identificador 3  
@@ -74,20 +65,24 @@ account_description = """O Identificador da conta o qual deseja ver os imóveis.
 
 
 class Query(BaseModel):
-    plan: int = Field(3, description=plan_description)
-    type: int = Field(3, description=type_description)
-    street: str = Field("", description="A rua do imóvel")
-    account_id: int = Field(-1, description=account_description)
+    plan: int = PlanBitField
+    type: int = TypeBitField
+    street: str = StreetField
+    account_id: int = Field(-1, description=account_description, gt=-2)
 
 
 @blueprint.get(
     "", tags=[tag], description=description, responses=responses, security=security_r
 )
 def get_properties(query: Query):
-    if query.account_id > -1:
-        return query_by_id(query.account_id)
-    else:
-        return query_by_street(query)
+    try:
+        if query.account_id > -1:
+            return query_by_id(query.account_id)
+        else:
+            return query_by_street(query)
+    except Exception as e:
+        logger.error(e)
+        return ("", 500)
 
 
 def query_by_street(query: Query):

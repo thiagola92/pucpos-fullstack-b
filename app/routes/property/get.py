@@ -1,4 +1,6 @@
-from pydantic import BaseModel, Field
+from app.logger import logger
+
+from pydantic import BaseModel
 from sqlalchemy import select
 
 from app.database import DatabaseSession
@@ -7,7 +9,7 @@ from app.database.plans import Plan
 from app.database.types import Type
 from app.database.addresses import Address
 from app.routes.property import blueprint, tag
-from app.routes.generic import generic404
+from app.routes.fields import PropertyField
 
 
 class PropertyGetResponse(BaseModel):
@@ -21,46 +23,48 @@ class PropertyGetResponse(BaseModel):
 
 description = "Pega informações de um imóvel."
 
-responses = {
-    404: generic404,
-    200: PropertyGetResponse,
-}
+responses = {200: PropertyGetResponse, 204: {}, 500: {}}
 
 
 class PropertyGet(BaseModel):
-    id: int = Field(description="O identificador do imóvel.")
+    id: int = PropertyField
 
 
 @blueprint.get("<int:id>", tags=[tag], description=description, responses=responses)
 def get_property(path: PropertyGet):
-    property = select(Property).where(Property.id == path.id)
+    try:
+        property = select(Property).where(Property.id == path.id)
 
-    with DatabaseSession() as s:
-        property = s.scalars(property).first()
+        with DatabaseSession() as s:
+            property = s.scalars(property).first()
 
-        address = select(Address).where(Address.id == property.address_id)
-        address = s.scalars(address).first()
+            if not property:
+                return ("", 204)
 
-        if not address:
-            ("Não encontrado", 404)
+            address = select(Address).where(Address.id == property.address_id)
+            address = s.scalars(address).first()
 
-        address = address.dict()
+            if not address:
+                return ("", 204)
 
-        plans = select(Plan)
-        plans = s.scalars(plans).all()
-        plans = {t.id: t.dict() for t in plans}
+            address = address.dict()
 
-        types = select(Type)
-        types = s.scalars(types).all()
-        types = {p.id: p.dict() for p in types}
+            plans = select(Plan)
+            plans = s.scalars(plans).all()
+            plans = {t.id: t.dict() for t in plans}
 
-        property = property.dict()
+            types = select(Type)
+            types = s.scalars(types).all()
+            types = {p.id: p.dict() for p in types}
 
-        if property:
+            property = property.dict()
             property["plan"] = plans[property["plan_id"]]
             property["type"] = types[property["type_id"]]
             property["address"] = address
 
             return property
 
-    return ("Não encontrado", 404)
+        return ("", 204)
+    except Exception as e:
+        logger.error(e)
+        return ("", 500)
